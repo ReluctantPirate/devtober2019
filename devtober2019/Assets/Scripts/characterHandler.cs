@@ -12,8 +12,10 @@ public class characterHandler : MonoBehaviour
 
     [Header("Character Status")]
     public int energyRemaining;
-    public float defensePoints;
-    public int woundPoints;
+    public int defenseRating;
+    public int speedRating;
+    public int remainingHP;
+
 
     // Start is called before the first frame update
     void Start()
@@ -48,5 +50,33 @@ public class characterHandler : MonoBehaviour
     public void declareAttack(int type)
     {
 
+    }
+
+    public void receiveAttack(int attackSpeed, int attackPower)
+    {
+        bool attackHits = true;
+        byte speedDiff = attackSpeed - speedRating;
+
+        //work out the dodge chance
+        float dodgeChance = 10;
+        if (speedDiff > 0)//they are faster
+        {
+            //work out the chance of dodging from 1% to 10%
+            dodgeChance = 10 - (9 * (Mathf.Abs(speedDiff)/99));
+        } else if (speedDiff < 0)//you are faster
+        {
+            dodgeChance = 10 + (65 * (speedDiff / 99));
+        }
+
+        if(Random.Range(0,100) <= dodgeChance)
+        {
+            attackHits = false;
+        }
+
+        if (attackHits)
+        {
+            //take damage
+            remainingHP -= Mathf.Round(attackPower * (defenseRating / 100f));
+        }
     }
 }
